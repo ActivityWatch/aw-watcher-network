@@ -6,6 +6,7 @@ import re
 import sys
 from datetime import datetime
 import pytz
+from wireless import Wireless
 
 from aw_core.models import Event
 from aw_client import ActivityWatchClient
@@ -29,7 +30,7 @@ def ping(nbr) -> str:
     return " ".join(out.split("\n")[-3:-1])
 
 # Parses data
-def createEvents(out,timestamp):
+def createEvents(out,timestamp,wifiname):
     spacesep = out.split(" ")
     maxping = 0
     meanping = 0
@@ -44,11 +45,11 @@ def createEvents(out,timestamp):
         maxping = float(extract[-2])
         meanping = float(extract[-3])
         minping = float(extract[-4].split("= ")[-1])
-        events.append(Event(timestamp=timestamp, label="max", duration={"value": maxping, "unit": "ms"}))
-        events.append(Event(timestamp=timestamp, label="min", duration={"value": minping, "unit": "ms"}))
-        events.append(Event(timestamp=timestamp, label="mean", duration={"value": meanping, "unit": "ms"}, count=received))
-    events.append(Event(timestamp=timestamp, label="failed", count=failed))
-    events.append(Event(timestamp=timestamp, label="received", count=received))
+        events.append(Event(timestamp=timestamp, label=["max", "ssid:"+wifiname], duration={"value": maxping, "unit": "ms"}))
+        events.append(Event(timestamp=timestamp, label=["min", "ssid:"+wifiname], duration={"value": minping, "unit": "ms"}))
+        events.append(Event(timestamp=timestamp, label=["mean", "ssid:"+wifiname], duration={"value": meanping, "unit": "ms"}, count=received))
+    events.append(Event(timestamp=timestamp, label=["failed", "ssid:"+wifiname], count=failed))
+    events.append(Event(timestamp=timestamp, label=["received", "ssid:"+wifiname], count=received))
 
     return events
 
@@ -68,9 +69,10 @@ def main():
         sleeptime = 60 - (t.second + t.microsecond/1000000.0)
         sleep(sleeptime)
         timestamp = datetime.now(pytz.utc)
+        wifiname = Wireless().current()
         try:
             out = ping(30)
-            client.send_events(createEvents(out,timestamp))
+            client.send_events(createEvents(out,timestamp,wifiname))
                 
         except Exception as e:
             import sys, traceback

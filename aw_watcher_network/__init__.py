@@ -1,0 +1,1 @@
+from pingwatcher import main
