@@ -45,11 +45,11 @@ def createEvents(out,timestamp,wifiname):
         maxping = float(extract[-2])
         meanping = float(extract[-3])
         minping = float(extract[-4].split("= ")[-1])
-        events.append(Event(timestamp=timestamp, label=["max", "ssid:"+wifiname], duration={"value": maxping, "unit": "ms"}))
-        events.append(Event(timestamp=timestamp, label=["min", "ssid:"+wifiname], duration={"value": minping, "unit": "ms"}))
-        events.append(Event(timestamp=timestamp, label=["mean", "ssid:"+wifiname], duration={"value": meanping, "unit": "ms"}, count=received))
+        events.append(Event(timestamp=timestamp, label=["received","ssid:"+wifiname], count=received,
+            duration=[{"value":meanping,"unit":"ms","label":meanping},
+            {"value":maxping,"unit":"ms","label":maxping},{"value":minping,
+            "unit":"ms","label":minping}]))
     events.append(Event(timestamp=timestamp, label=["failed", "ssid:"+wifiname], count=failed))
-    events.append(Event(timestamp=timestamp, label=["received", "ssid:"+wifiname], count=received))
 
     return events
 
