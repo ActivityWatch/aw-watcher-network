@@ -64,6 +64,10 @@ def main():
     logging.basicConfig(level=logging.DEBUG if args.testing else logging.INFO)
     client = ActivityWatchClient("pingwatcher", testing=args.testing)
 
+    bucketname = "{}_{}".format(client.client_name, client.client_hostname)
+    eventtype = "ping"
+    client.create_bucket(bucketname, eventtype)
+
     while True:
         t = datetime.utcnow()
         sleeptime = 60 - (t.second + t.microsecond/1000000.0)
@@ -72,7 +76,7 @@ def main():
         wifiname = Wireless().current()
         try:
             out = ping(30)
-            client.send_events(createEvents(out,timestamp,wifiname))
+            client.send_events(bucketname, createEvents(out,timestamp,wifiname))
                 
         except Exception as e:
             import sys, traceback
