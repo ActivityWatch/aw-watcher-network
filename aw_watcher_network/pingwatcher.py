@@ -67,6 +67,8 @@ def main():
     bucketname = "{}_{}".format(client.client_name, client.client_hostname)
     eventtype = "ping"
     client.create_bucket(bucketname, eventtype)
+    logger.info("Starting to log ping")
+
 
     while True:
         t = datetime.utcnow()
@@ -77,6 +79,7 @@ def main():
         try:
             out = ping(30)
             client.send_events(bucketname, createEvents(out,timestamp,wifiname))
+            logger.info("Sent events")
                 
         except Exception as e:
             import sys, traceback

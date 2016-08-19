@@ -1,1 +1,1 @@
-from pingwatcher import main
+from .pingwatcher import main
