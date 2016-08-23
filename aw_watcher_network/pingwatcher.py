@@ -62,7 +62,7 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.testing else logging.INFO)
-    client = ActivityWatchClient("pingwatcher", testing=args.testing)
+    client = ActivityWatchClient("aw-watcher-network", testing=args.testing)
 
     bucketname = "{}_{}".format(client.client_name, client.client_hostname)
     eventtype = "ping"
